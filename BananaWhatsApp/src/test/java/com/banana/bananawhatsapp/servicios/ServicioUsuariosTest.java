@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -75,7 +76,7 @@ class ServicioUsuariosTest {
         int numPosibles = 100;
         Usuario user = new Usuario(1, "Juan", "j@j.com", LocalDate.now(), true, null);
 
-        Set<Usuario> conjuntoDestinatarios = servicio.obtenerPosiblesDesinatarios(user, numPosibles);
+        List<Usuario> conjuntoDestinatarios = servicio.obtenerPosiblesDesinatarios(user, numPosibles);
         assertThat(conjuntoDestinatarios.size(), lessThanOrEqualTo(numPosibles));
     }
 
