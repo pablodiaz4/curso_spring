@@ -3,6 +3,7 @@ package com.banana.bananawhatsapp.modelos;
 import com.banana.bananawhatsapp.exceptions.MensajeException;
 import lombok.*;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -10,14 +11,26 @@ import java.time.LocalDate;
 @Setter
 @Getter
 @ToString
+@Entity
+@Table(name = "mensaje")
+@Builder
 public class Mensaje {
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name="from_user")
     private Usuario remitente;
 
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn(name="to_user")
     private Usuario destinatario;
 
+    @Column (name = "cuerpo")
     private String cuerpo;
+
+    @Column (name = "fecha")
     private LocalDate fecha;
 
     private boolean validarFecha() {
@@ -35,6 +48,4 @@ public class Mensaje {
         ) return true;
         else throw new MensajeException("Mensaje no valido");
     }
-
-
 }

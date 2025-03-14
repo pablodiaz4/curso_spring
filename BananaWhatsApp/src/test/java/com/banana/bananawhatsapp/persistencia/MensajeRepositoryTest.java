@@ -8,6 +8,7 @@ import com.banana.bananawhatsapp.util.DBUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,8 +18,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.*;
 
-
-class MensajeRepositoryTest {
+public class MensajeRepositoryTest {
 
     IUsuarioRepository repoUsuario;
 
@@ -45,8 +45,8 @@ class MensajeRepositoryTest {
     @Test
     @Order(2)
     void dadoUnMensajeNOValido_cuandoCrear_entoncesExcepcion() throws Exception {
-        Usuario remitente = new Usuario(1, null, null, null, true);
-        Usuario destinatario = new Usuario(2, null, null, null, true);
+        Usuario remitente = new Usuario(1, null, null, null, true, null);
+        Usuario destinatario = new Usuario(2, null, null, null, true, null);
         Mensaje message = new Mensaje(null, destinatario, remitente, "SMS < 10", LocalDate.now());
         assertThrows(Exception.class, () -> {
             repoMensaje.crear(message);
@@ -65,7 +65,7 @@ class MensajeRepositoryTest {
     @Test
     @Order(4)
     void dadoUnUsuarioNOValido_cuandoObtener_entoncesExcepcion() throws Exception {
-        Usuario user = new Usuario(1, null, null, null, false);
+        Usuario user = new Usuario(1, null, null, null, false, null);
 
         assertThrows(UsuarioException.class, () -> {
             List<Mensaje> userMessages = repoMensaje.obtener(user);
@@ -106,7 +106,7 @@ class MensajeRepositoryTest {
     @Test
     @Order(8)
     void dadoUnUsuarioNOValido_cuandoBorrarTodos_entoncesExcepcion() throws Exception {
-        Usuario user = new Usuario(1, null, null, null, true);
+        Usuario user = new Usuario(1, null, null, null, true, null);
 
         assertThrows(UsuarioException.class, () -> {
             repoMensaje.borrarTodos(user);
