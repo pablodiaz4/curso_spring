@@ -1,6 +1,7 @@
 package com.microcompany.accountsservice.services;
 
 import com.microcompany.accountsservice.model.Account;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 

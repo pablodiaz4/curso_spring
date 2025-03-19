@@ -1,0 +1,8 @@
+com\microcompany\accountsservice\exception\GlobalException.class
+com\microcompany\accountsservice\model\Account.class
+com\microcompany\accountsservice\model\Customer.class
+com\microcompany\accountsservice\services\AccountService.class
+com\microcompany\accountsservice\services\IAccountService.class
+com\microcompany\accountsservice\persistence\AccountRepository.class
+com\microcompany\accountsservice\exception\AccountNotfoundException.class
+com\microcompany\accountsservice\payload\ApiResponse.class

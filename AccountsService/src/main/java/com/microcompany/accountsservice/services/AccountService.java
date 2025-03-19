@@ -35,7 +35,7 @@ public class AccountService implements IAccountService {
     public Account getAccount(Long id) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new AccountNotfoundException(id));
         Customer owner = null; // Will be gotten from user service
-        account.setOwner(owner);
+        account.setOwnerId(owner);
         return account;
     }
 
@@ -55,7 +55,7 @@ public class AccountService implements IAccountService {
     public Account addBalance(Long id, int amount, Long ownerId) {
         Account newAccount = accountRepository.findById(id).orElseThrow(() -> new AccountNotfoundException(id));
         Customer owner = null;// Will be gotten from user service
-        int newBalance = newAccount.getBalance() + amount;
+        Double newBalance = newAccount.getBalance() + amount;
         newAccount.setBalance(newBalance);
         return accountRepository.save(newAccount);
     }
@@ -64,7 +64,7 @@ public class AccountService implements IAccountService {
     public Account withdrawBalance(Long id, int amount, Long ownerId) {
         Account newAccount = accountRepository.findById(id).orElseThrow(() -> new AccountNotfoundException(id));
         Customer owner = null; // Will be gotten from user service
-        int newBalance = newAccount.getBalance() - amount;
+        Double newBalance = newAccount.getBalance() - amount;
         newAccount.setBalance(newBalance);
         return accountRepository.save(newAccount);
     }
