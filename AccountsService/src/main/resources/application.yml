@@ -11,7 +11,6 @@ server:
       include-stacktrace: on_param
       include-exception: false
 
-
 ---
 spring:
   sql.init.mode: always
@@ -32,9 +31,8 @@ spring:
   h2:
     console.enabled: true
     console.path: /h2-ui
-
 server:
-  port: 9090
+  port: 9900
 
 #debug: true
 logging:

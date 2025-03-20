@@ -34,8 +34,6 @@ public class AccountService implements IAccountService {
     @Override
     public Account getAccount(Long id) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new AccountNotfoundException(id));
-        Customer owner = null; // Will be gotten from user service
-        account.setOwnerId(owner);
         return account;
     }
 

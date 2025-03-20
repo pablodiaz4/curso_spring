@@ -3,6 +3,7 @@ package com.microcompany.accountsservice.model;
 
 import javax.persistence.*;
 
+import com.sun.istack.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -21,9 +22,11 @@ public class Customer {
     private Long id;
 
     @Column
+    @NotNull
     private String name;
 
     @Column
+    @NotNull
     private String email;
 
 //    @OneToMany (fetch = FetchType.LAZY)

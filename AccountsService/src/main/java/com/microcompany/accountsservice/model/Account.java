@@ -9,7 +9,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.Date;
 
 @Getter
@@ -36,13 +44,14 @@ public class Account {
     @Column
     private Double balance;
 
-//    @Column
-//    @NotNull
-//    private Long ownerId;
+    @Column
+    @NotNull
+    private Long ownerId;
 
-    @JsonIgnore
-    @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name="ownerId", insertable = false, updatable = false)
-//    @Transient
-    Customer ownerId;
+//    @JsonIgnore
+//    @NotNull
+//    @ManyToOne (fetch = FetchType.LAZY)
+//    @JoinColumn(name="ownerId", insertable = false, updatable = false, nullable = false)
+////    @Transient
+//    Customer ownerId;
 }

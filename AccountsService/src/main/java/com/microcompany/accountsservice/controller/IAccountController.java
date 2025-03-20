@@ -31,11 +31,11 @@ public interface IAccountController {
     ResponseEntity modificarCuentaCliente(@PathVariable("accountId") Long accountId, @PathVariable("customerId") Long customerId, @RequestBody Account account);
 
     @PutMapping ("/{accountId}/{customerId}/operar")
-    ResponseEntity operarCuenta(@PathVariable("accountId") Long accountId, @RequestParam("cantidad") Double cantidad, @RequestParam("accion") AccountAction accion);
+    ResponseEntity operarCuenta(@PathVariable("accountId") Long accountId, @PathVariable("customerId") Long customerId, @RequestParam("cantidad") Double cantidad, @RequestParam("accion") AccountAction accion);
 
     @DeleteMapping ("/{customerId}")
     ResponseEntity eliminarCuentasCliente(@PathVariable("customerId") Long customerId);
 
     @GetMapping ("/{customerId}/validar")
-    ResponseEntity validarPrestamo(@RequestParam("customerId") Long customerId);
+    ResponseEntity validarPrestamo(@PathVariable("customerId") Long customerId, @RequestParam("cantidadSolicitada") Double cantidadSolicitada);
 }
