@@ -9,33 +9,33 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/default")
 public interface IAccountController {
-    @PutMapping (value = "/{accountId}/{ownerId}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @PutMapping (value = "/{accountId}/{ownerId}")
     ResponseEntity entregarCuenta(@PathVariable("accountId") Long accountId, @PathVariable("ownerId") Long ownerId);
 
     @GetMapping ()
     ResponseEntity obtenerCuentas(@RequestParam("customerId") Long customerId);
 
-    @PostMapping ("")
+    @PostMapping (consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     ResponseEntity crearCuenta(@RequestBody Account account);
 
-    @DeleteMapping ("/{accountId}")
+    @DeleteMapping (value = "/{accountId}")
     ResponseEntity eliminarCuenta(@PathVariable("accountId") Long accountId);
 
-    @PutMapping ("/{accountId}")
+    @PutMapping (value = "/{accountId}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     ResponseEntity modificarCuenta(@PathVariable("accountId") Long accountId, @RequestBody Account account);
 
-    @DeleteMapping ("/{accountId}/{customerId}")
+    @DeleteMapping (value = "/{accountId}/{customerId}")
     ResponseEntity eliminarCuentaCliente(@PathVariable("accountId") Long accountId, @PathVariable("customerId") Long customerId);
 
-    @PutMapping ("/{accountId}/{customerId}")
+    @PutMapping (value = "/{accountId}/{customerId}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     ResponseEntity modificarCuentaCliente(@PathVariable("accountId") Long accountId, @PathVariable("customerId") Long customerId, @RequestBody Account account);
 
-    @PutMapping ("/{accountId}/{customerId}/operar")
+    @PutMapping (value = "/{accountId}/{customerId}/operar")
     ResponseEntity operarCuenta(@PathVariable("accountId") Long accountId, @PathVariable("customerId") Long customerId, @RequestParam("cantidad") Double cantidad, @RequestParam("accion") AccountAction accion);
 
-    @DeleteMapping ("/{customerId}")
+    @DeleteMapping (value = "/{customerId}")
     ResponseEntity eliminarCuentasCliente(@PathVariable("customerId") Long customerId);
 
-    @GetMapping ("/{customerId}/validar")
+    @GetMapping (value = "/{customerId}/validar")
     ResponseEntity validarPrestamo(@PathVariable("customerId") Long customerId, @RequestParam("cantidadSolicitada") Double cantidadSolicitada);
 }
