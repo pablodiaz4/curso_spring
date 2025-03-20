@@ -1,5 +1,7 @@
 package com.microcompany.accountsservice.services;
 
+import com.microcompany.accountsservice.enums.AccountAction;
+import com.microcompany.accountsservice.exception.AccountNotBalanceException;
 import com.microcompany.accountsservice.exception.AccountNotfoundException;
 import com.microcompany.accountsservice.model.Account;
 import com.microcompany.accountsservice.model.Customer;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountService implements IAccountService {
@@ -81,5 +84,63 @@ public class AccountService implements IAccountService {
         }
     }
 
+    @Override
+    public Account operate(Account cuenta, Double cantidad, AccountAction accion) {
+        if (cuenta != null){
+            if (AccountAction.INGRESAR.equals(accion)){
+                cuenta.setBalance(cuenta.getBalance()+cantidad);
+            }
+            else if (AccountAction.RETIRAR.equals(accion)){
+                if (cuenta.getBalance() >= cantidad){
+                    cuenta.setBalance(cuenta.getBalance()-cantidad);
+                }
+                else{
+                    // Si no hay suficiente dinero en la cuenta calculo el debe del cliente
+                    Double resto = cantidad - cuenta.getBalance();
 
+                    Double totalCliente = getAccountByOwnerId(cuenta.getOwnerId()).stream().map(Account::getBalance).reduce(0D, Double::sum);
+
+                    // Si el cliente no tiene dinero suficiente en otras cuentas devolvemos una excepción
+                    if (totalCliente < cantidad){
+                        throw new AccountNotBalanceException(cuenta.getOwnerId());
+                    }
+                    else{
+                        final Long cuentaId = cuenta.getId();
+
+                        // Obtenemos el resto de cuentas del cliente
+                        List<Account> cuentas = getAccountByOwnerId(cuenta.getOwnerId()).stream().filter(a -> !a.getId().equals(cuentaId)).collect(Collectors.toList());
+
+                        // Vamos retirando dinero de las otras cuentas hasta que el total a retirar sea 0
+                        for (Account a: cuentas){
+                            if (resto > 0){
+                                if (resto > a.getBalance()){
+                                    resto = resto - a.getBalance();
+                                    a.setBalance(0D);
+                                }
+                                else{
+                                    a.setBalance(a.getBalance()-resto);
+                                    resto = 0D;
+                                }
+
+                                updateAccount(a.getId(), a);
+                            }
+                            else{
+                                break;
+                            }
+                        }
+                    }
+
+                    cuenta.setBalance(0D);
+                }
+            }
+
+            // Modifico la cuenta con la nueva cantidad disponible
+            cuenta = updateAccount(cuenta.getId(), cuenta);
+
+            return cuenta;
+        }
+        else{
+            throw new AccountNotfoundException();
+        }
+    }
 }

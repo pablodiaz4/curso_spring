@@ -33,7 +33,7 @@ public interface IAccountController {
     @PutMapping (value = "/{accountId}/{customerId}/operar")
     ResponseEntity operarCuenta(@PathVariable("accountId") Long accountId, @PathVariable("customerId") Long customerId, @RequestParam("cantidad") Double cantidad, @RequestParam("accion") AccountAction accion);
 
-    @DeleteMapping (value = "/{customerId}")
+    @DeleteMapping (value = "/{customerId}/all")
     ResponseEntity eliminarCuentasCliente(@PathVariable("customerId") Long customerId);
 
     @GetMapping (value = "/{customerId}/validar")

@@ -31,7 +31,7 @@ public class AccountController implements IAccountController{
         List<Account> cuentas = accountService.getAccountByOwnerId(customerId);
 
         // Si existen cuentas, las devolvemos. En caso contrario devolvemos un NOT_FOUND
-        return !CollectionUtils.isEmpty(cuentas) ? ResponseEntity.ok().body(cuentas) : ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se ha encontrado el cliente");
+        return !CollectionUtils.isEmpty(cuentas) ? ResponseEntity.ok().body(cuentas) : ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se han encontrado cuentas para el cliente con id " + customerId);
     }
 
     @Override
@@ -169,55 +169,10 @@ public class AccountController implements IAccountController{
             return ResponseEntity.status(HttpStatus.CONFLICT).body("La cuenta no pertenece al cliente indicado");
         }
 
-        // Dependiendo de la acción sumo o resto dinero de la cuenta
-        if (AccountAction.INGRESAR.equals(accion)){
-            cuenta.setBalance(cuenta.getBalance()+cantidad);
-        }
-        else if (AccountAction.RETIRAR.equals(accion)){
-            if (cuenta.getBalance() >= cantidad){
-                cuenta.setBalance(cuenta.getBalance()-cantidad);
-            }
-            else{
-                // Si no hay suficiente dinero en la cuenta calculo el debe del cliente
-                Double resto = cantidad - cuenta.getBalance();
+        // Llamamos al servicio para realizar una operación en la cuenta
+        cuenta = accountService.operate(cuenta, cantidad, accion);
 
-                Double totalCliente = accountService.getAccountByOwnerId(customerId).stream().map(Account::getBalance).reduce(0D, Double::sum) - resto;
-
-                // Si el cliente no tiene dinero suficiente en otras cuentas devolvemos una excepción
-                if (totalCliente <= 0){
-                    throw new AccountNotBalanceException(customerId);
-                }
-                else{
-                    // Obtenemos el resto de cuentas del cliente
-                    List<Account> cuentas = accountService.getAccountByOwnerId(customerId).stream().filter(a -> !a.getId().equals(accountId)).collect(Collectors.toList());
-
-                    // Vamos retirando dinero de las otras cuentas hasta que el total a retirar sea 0
-                    for (Account a: cuentas){
-                        if (resto > 0){
-                            if (resto > cuenta.getBalance()){
-                                resto = resto - cuenta.getBalance();
-                                a.setBalance(0D);
-                            }
-                            else{
-                                a.setBalance(cuenta.getBalance()-cantidad);
-                            }
-
-                            accountService.updateAccount(a.getId(), a);
-                        }
-                        else{
-                            break;
-                        }
-                    }
-                }
-
-                cuenta.setBalance(0D);
-            }
-        }
-
-        // Modifico la cuenta con la nueva cantidad disponible
-        cuenta = accountService.updateAccount(accountId, cuenta);
-
-        // Si modifica correctamente la cuenta, la devolvemos. En caso contrario devolvemos un CONFLICT
+        // Si la operacion se ha realizado correctamente se devuelve un OK
         return cuenta != null ? ResponseEntity.ok().body(cuenta) : ResponseEntity.status(HttpStatus.CONFLICT).body("La modificación para la cuenta con id " + accountId + " no se ha realizado correctamente");
     }
 

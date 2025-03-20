@@ -1,5 +1,6 @@
 package com.microcompany.accountsservice.services;
 
+import com.microcompany.accountsservice.enums.AccountAction;
 import com.microcompany.accountsservice.model.Account;
 import org.springframework.stereotype.Service;
 
@@ -23,4 +24,6 @@ public interface IAccountService {
     void delete(Long id);
 
     void deleteAccountsUsingOwnerId(Long ownerId);
+
+    Account operate (Account cuenta, Double cantidad, AccountAction accion);
 }
