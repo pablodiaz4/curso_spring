@@ -52,7 +52,7 @@ public class AccountController implements IAccountController{
         Account newAccount = accountService.create(account);
 
         // Si crea correctamente la cuenta, la devolvemos. En caso contrario devolvemos un CONFLICT
-        return newAccount != null && newAccount.getId()>0 ? ResponseEntity.ok().body(newAccount) : ResponseEntity.status(HttpStatus.CONFLICT).build();
+        return newAccount != null && newAccount.getId()>0 ? ResponseEntity.ok().body(newAccount) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @Override
@@ -101,7 +101,7 @@ public class AccountController implements IAccountController{
         cuenta = accountService.updateAccount(accountId, account);
 
         // Si modifica correctamente la cuenta, la devolvemos. En caso contrario devolvemos un CONFLICT
-        return cuenta != null ? ResponseEntity.ok().body(cuenta) : ResponseEntity.status(HttpStatus.CONFLICT).build();
+        return cuenta != null ? ResponseEntity.ok().body(cuenta) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @Override
@@ -154,13 +154,13 @@ public class AccountController implements IAccountController{
 
         // Comprobamos que la cuenta pertenezca al cliente que nos llega desde el frontal
         if (!customerId.equals(cuenta.getOwnerId())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("La cuenta a modificar no pertenece al cliente indicado");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("La cuenta a modificar no pertenece al cliente indicado");
         }
 
         cuenta = accountService.updateAccount(accountId, account);
 
         // Si modifica correctamente la cuenta, la devolvemos. En caso contrario devolvemos un CONFLICT
-        return (cuenta != null) ? ResponseEntity.ok().body(cuenta) : ResponseEntity.status(HttpStatus.CONFLICT).body("No se ha realizado correctamente la modificadión de la cuenta con id " + accountId);
+        return (cuenta != null) ? ResponseEntity.ok().body(cuenta) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha realizado correctamente la modificadión de la cuenta con id " + accountId);
     }
 
     @Override
@@ -186,7 +186,7 @@ public class AccountController implements IAccountController{
         cuenta = accountService.operate(cuenta, cantidad, accion);
 
         // Si la operacion se ha realizado correctamente se devuelve un OK
-        return cuenta != null ? ResponseEntity.ok().body(cuenta) : ResponseEntity.status(HttpStatus.CONFLICT).body("La modificación para la cuenta con id " + accountId + " no se ha realizado correctamente");
+        return cuenta != null ? ResponseEntity.ok().body(cuenta) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("La modificación para la cuenta con id " + accountId + " no se ha realizado correctamente");
     }
 
     @Override
@@ -220,7 +220,7 @@ public class AccountController implements IAccountController{
             return ResponseEntity.status(HttpStatus.CONFLICT).body("La cuenta con id " + accountId + " no pertenece al cliente indicado");
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.ok().body(cuenta);
     }
 
     @Override
