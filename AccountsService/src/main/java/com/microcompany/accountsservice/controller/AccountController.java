@@ -1,6 +1,7 @@
 package com.microcompany.accountsservice.controller;
 
 import com.microcompany.accountsservice.enums.AccountAction;
+import com.microcompany.accountsservice.enums.AccountType;
 import com.microcompany.accountsservice.exception.AccountNotBalanceException;
 import com.microcompany.accountsservice.exception.AccountNotfoundException;
 import com.microcompany.accountsservice.model.Account;
@@ -46,6 +47,11 @@ public class AccountController implements IAccountController{
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La información del propietario de la cuenta no puede venir vacio");
         }
 
+        // Comprobamos que el tipo de cuenta sea válido
+        if (!AccountType.PERSONAL.equals(account.getType()) && !AccountType.COMPANY.equals(account.getType())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El tipo de cuenta debe de ser PERSONAL o COMPANY");
+        }
+
         Account newAccount = accountService.create(account);
 
         // Si crea correctamente la cuenta, la devolvemos. En caso contrario devolvemos un CONFLICT
@@ -81,6 +87,11 @@ public class AccountController implements IAccountController{
         // Comprobamos que la cuenta tenga un propietario
         if (account.getOwnerId() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La información del propietario de la cuenta debe de venir informada");
+        }
+
+        // Comprobamos que el tipo de cuenta sea válido
+        if (account.getType() != null && !AccountType.PERSONAL.equals(account.getType()) && !AccountType.COMPANY.equals(account.getType())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El tipo de cuenta debe de ser PERSONAL o COMPANY");
         }
 
         // Comprobamos que la cuenta exista en el sistema
@@ -130,6 +141,11 @@ public class AccountController implements IAccountController{
         // Comprobamos que la cuenta tenga un propietario
         if (account.getOwnerId() == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La información del propietario de la cuenta debe de venir informado");
+        }
+
+        // Comprobamos que el tipo de cuenta sea válido
+        if (account.getType() != null && !AccountType.PERSONAL.equals(account.getType()) && !AccountType.COMPANY.equals(account.getType())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El tipo de cuenta debe de ser PERSONAL o COMPANY");
         }
 
         // Comprobamos que la cuenta exista en el sistema
