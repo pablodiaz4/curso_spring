@@ -2,8 +2,6 @@ package com.microcompany.accountsservice.controller;
 
 import com.microcompany.accountsservice.enums.AccountAction;
 import com.microcompany.accountsservice.enums.AccountType;
-import com.microcompany.accountsservice.exception.AccountNotBalanceException;
-import com.microcompany.accountsservice.exception.AccountNotfoundException;
 import com.microcompany.accountsservice.model.Account;
 import com.microcompany.accountsservice.services.IAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/account")
@@ -48,7 +45,7 @@ public class AccountController implements IAccountController{
         }
 
         // Comprobamos que el tipo de cuenta sea válido
-        if (!AccountType.PERSONAL.equals(account.getType()) && !AccountType.COMPANY.equals(account.getType())){
+        if (!AccountType.PERSONAL.toString().equals(account.getType()) && !AccountType.COMPANY.toString().equals(account.getType())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El tipo de cuenta debe de ser PERSONAL o COMPANY");
         }
 
@@ -90,7 +87,7 @@ public class AccountController implements IAccountController{
         }
 
         // Comprobamos que el tipo de cuenta sea válido
-        if (account.getType() != null && !AccountType.PERSONAL.equals(account.getType()) && !AccountType.COMPANY.equals(account.getType())){
+        if (account.getType() != null && !AccountType.PERSONAL.toString().equals(account.getType()) && !AccountType.COMPANY.toString().equals(account.getType())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El tipo de cuenta debe de ser PERSONAL o COMPANY");
         }
 
@@ -144,7 +141,7 @@ public class AccountController implements IAccountController{
         }
 
         // Comprobamos que el tipo de cuenta sea válido
-        if (account.getType() != null && !AccountType.PERSONAL.equals(account.getType()) && !AccountType.COMPANY.equals(account.getType())){
+        if (account.getType() != null && !AccountType.PERSONAL.toString().equals(account.getType()) && !AccountType.COMPANY.toString().equals(account.getType())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El tipo de cuenta debe de ser PERSONAL o COMPANY");
         }
 
@@ -234,7 +231,7 @@ public class AccountController implements IAccountController{
         }
 
         // Obtenemos el maximo puede solicitar un cliente. 80% del balance total de todas sus cuentas
-        Double maxPermitidoCliente = accountService.getAccountByOwnerId(customerId).stream().map(Account::getBalance).reduce(0D, Double::sum) * 0.8D;
+        double maxPermitidoCliente = accountService.getAccountByOwnerId(customerId).stream().map(Account::getBalance).reduce(0D, Double::sum) * 0.8D;
 
         // Si el maximo permitido es superior al solicitado devolvemos un OK
         if (maxPermitidoCliente >= cantidadSolicitada){
