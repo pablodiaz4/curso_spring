@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ public class AccountService implements IAccountService {
     private AccountRepository accountRepository;
 
     @Override
+    @Transactional
     public Account create(Account account) {
         Date current_Date = new Date();
         account.setOpeningDate(current_Date);
@@ -46,6 +48,7 @@ public class AccountService implements IAccountService {
     }
 
     @Override
+    @Transactional
     public Account updateAccount(Long id, Account account) {
         Account newAccount = accountRepository.findById(id).orElseThrow(() -> new AccountNotfoundException(id));
         newAccount.setType(account.getType());
@@ -53,6 +56,7 @@ public class AccountService implements IAccountService {
     }
 
     @Override
+    @Transactional
     public Account addBalance(Long id, int amount, Long ownerId) {
         Account newAccount = accountRepository.findById(id).orElseThrow(() -> new AccountNotfoundException(id));
         Customer owner = null;// Will be gotten from user service
@@ -62,6 +66,7 @@ public class AccountService implements IAccountService {
     }
 
     @Override
+    @Transactional
     public Account withdrawBalance(Long id, int amount, Long ownerId) {
         Account newAccount = accountRepository.findById(id).orElseThrow(() -> new AccountNotfoundException(id));
         Customer owner = null; // Will be gotten from user service
@@ -71,12 +76,14 @@ public class AccountService implements IAccountService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new AccountNotfoundException(id));
         this.accountRepository.delete(account);
     }
 
     @Override
+    @Transactional
     public void deleteAccountsUsingOwnerId(Long ownerId) {
         List<Account> accounts = accountRepository.findByOwnerId(ownerId);
         for (Account account : accounts) {
@@ -85,6 +92,7 @@ public class AccountService implements IAccountService {
     }
 
     @Override
+    @Transactional
     public Account operate(Account cuenta, Double cantidad, AccountAction accion) {
         if (cuenta != null){
             if (AccountAction.INGRESAR.equals(accion)){
