@@ -8,6 +8,7 @@ import com.microcompany.accountsservice.model.Account;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ public class AccountRepositoryExtendImpl implements AccountRepositoryExtend {
     private EntityManager em;
 
     @Override
+    @Transactional
     public Account operate(Account cuenta, Double cantidad, AccountAction accion) {
         if (cuenta != null){
             if (AccountAction.INGRESAR.equals(accion)){
@@ -30,7 +32,7 @@ public class AccountRepositoryExtendImpl implements AccountRepositoryExtend {
                     // Si no hay suficiente dinero en la cuenta calculo el debe del cliente
                     Double resto = cantidad - cuenta.getBalance();
 
-                    String sql = "SELECT a FROM Account a WHERE a.ownerId.id=?1";
+                    String sql = "SELECT a FROM Account a WHERE a.ownerId=?1";
                     TypedQuery query = em.createQuery(sql, Account.class);
                     query.setParameter(1, cuenta.getOwnerId());
 

@@ -180,6 +180,7 @@ public class AccountController implements IAccountController{
         // Comprobamos que la cuenta pertenezca al cliente que nos llega desde el frontal
         if (!customerId.equals(cuenta.getOwnerId())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("La cuenta no pertenece al cliente indicado");
+
         }
 
         // Llamamos al servicio para realizar una operación en la cuenta

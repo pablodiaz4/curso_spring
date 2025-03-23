@@ -1,7 +1,6 @@
 package com.microcompany.accountsservice.services;
 
 import com.microcompany.accountsservice.enums.AccountAction;
-import com.microcompany.accountsservice.exception.AccountNotBalanceException;
 import com.microcompany.accountsservice.exception.AccountNotfoundException;
 import com.microcompany.accountsservice.model.Account;
 import com.microcompany.accountsservice.model.Customer;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AccountService implements IAccountService {
