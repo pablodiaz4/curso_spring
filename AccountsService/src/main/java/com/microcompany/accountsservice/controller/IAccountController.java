@@ -1,5 +1,6 @@
 package com.microcompany.accountsservice.controller;
 
+import com.microcompany.accountsservice.dto.AccountDTO;
 import com.microcompany.accountsservice.enums.AccountAction;
 import com.microcompany.accountsservice.model.Account;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/default")
@@ -21,8 +24,8 @@ public interface IAccountController {
             @ApiResponse(responseCode = "404", description = "Si no existe la cuenta"),
             @ApiResponse(responseCode = "409", description = "Si la cuenta indicanda no pertenece al cliente que viene en el request")
     })
-    @PutMapping (value = "/{accountId}/{ownerId}")
-    ResponseEntity entregarCuenta(@PathVariable("accountId") Long accountId, @PathVariable("ownerId") Long ownerId);
+    @GetMapping (value = "/{accountId}/{ownerId}")
+    ResponseEntity <AccountDTO> entregarCuenta(@PathVariable("accountId") Long accountId, @PathVariable("ownerId") Long ownerId);
 
     @Operation(summary = "Lista de cuentas", description = "Método para obtener todas las cuentas de un cliente")
     @ApiResponses(value = {
@@ -32,7 +35,7 @@ public interface IAccountController {
 
     })
     @GetMapping ()
-    ResponseEntity obtenerCuentas(@RequestParam("customerId") Long customerId);
+    ResponseEntity <Collection <AccountDTO>> obtenerCuentas(@RequestParam("customerId") Long customerId);
 
     @Operation(summary = "Crea una cuenta de un cliente", description = "Método para crear un cuenta nueva para un cliente")
     @ApiResponses(value = {
@@ -41,7 +44,7 @@ public interface IAccountController {
             @ApiResponse(responseCode = "500", description = "Si ocurre un error al crear la cuenta")
     })
     @PostMapping (consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    ResponseEntity crearCuenta(@RequestBody Account account);
+    ResponseEntity <AccountDTO> crearCuenta(@RequestBody Account account);
 
     @Operation(summary = "Elimina una cuenta por su id", description = "Método para eliminar una cuenta por su id")
     @ApiResponses(value = {
@@ -60,7 +63,7 @@ public interface IAccountController {
             @ApiResponse(responseCode = "500", description = "Si ocurre un error al modificar la cuenta")
     })
     @PutMapping (value = "/{accountId}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    ResponseEntity modificarCuenta(@PathVariable("accountId") Long accountId, @RequestBody Account account);
+    ResponseEntity <AccountDTO> modificarCuenta(@PathVariable("accountId") Long accountId, @RequestBody Account account);
 
     @Operation(summary = "Elimina una cuenta para un cliente específico", description = "Método para eliminar una cuenta para un cliente específico")
     @ApiResponses(value = {
@@ -81,7 +84,7 @@ public interface IAccountController {
             @ApiResponse(responseCode = "500", description = "Si ocurre un error al modificar la cuenta")
     })
     @PutMapping (value = "/{accountId}/{customerId}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
-    ResponseEntity modificarCuentaCliente(@PathVariable("accountId") Long accountId, @PathVariable("customerId") Long customerId, @RequestBody Account account);
+    ResponseEntity <AccountDTO> modificarCuentaCliente(@PathVariable("accountId") Long accountId, @PathVariable("customerId") Long customerId, @RequestBody Account account);
 
     @Operation(summary = "Realizar operacion en cuenta", description = "Realiza una operacion de ingresar o retirar capital de la cuenta")
     @ApiResponses(value = {
@@ -92,7 +95,7 @@ public interface IAccountController {
             @ApiResponse(responseCode = "500", description = "Si ocurre un error al realizar la operación")
     })
     @PutMapping (value = "/{accountId}/{customerId}/operar")
-    ResponseEntity operarCuenta(@PathVariable("accountId") Long accountId, @PathVariable("customerId") Long customerId, @RequestParam("cantidad") Double cantidad, @RequestParam("accion") AccountAction accion);
+    ResponseEntity <AccountDTO> operarCuenta(@PathVariable("accountId") Long accountId, @PathVariable("customerId") Long customerId, @RequestParam("cantidad") Double cantidad, @RequestParam("accion") AccountAction accion);
 
     @Operation(summary = "Elimiar cuentas del cliente", description = "Método para eliminar todas las cuentas de un cliente")
     @ApiResponses(value = {

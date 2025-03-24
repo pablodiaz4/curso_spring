@@ -1,7 +1,9 @@
 package com.microcompany.accountsservice.controller;
 
+import com.microcompany.accountsservice.dto.AccountDTO;
 import com.microcompany.accountsservice.enums.AccountAction;
 import com.microcompany.accountsservice.enums.AccountType;
+import com.microcompany.accountsservice.mapper.AccountMapper;
 import com.microcompany.accountsservice.model.Account;
 import com.microcompany.accountsservice.services.IAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -20,39 +23,42 @@ public class AccountController implements IAccountController{
     private IAccountService accountService;
 
     @Override
-    public ResponseEntity obtenerCuentas(Long customerId) {
+    public ResponseEntity <Collection<AccountDTO>> obtenerCuentas(Long customerId) {
         // Comprobamos que el id del cliente viene informado
         if (customerId == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         List<Account> cuentas = accountService.getAccountByOwnerId(customerId);
+        Collection<AccountDTO> cuentasDTO = AccountMapper.INSTANCE.accountsToAccountDTOs(cuentas);
 
         // Si existen cuentas, las devolvemos. En caso contrario devolvemos un NOT_FOUND
-        return !CollectionUtils.isEmpty(cuentas) ? ResponseEntity.ok().body(cuentas) : ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se han encontrado cuentas para el cliente con id " + customerId);
+        return !CollectionUtils.isEmpty(cuentas) ? ResponseEntity.ok().body(cuentasDTO) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @Override
-    public ResponseEntity crearCuenta(Account account) {
+    public ResponseEntity <AccountDTO> crearCuenta(Account account) {
         // Comprobamos que la cuenta venga informada
         if (account == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La información de la cuenta a crear no puede venir vacía");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         // Comprobamos que la cuenta tenga un propietario
         if (account.getOwnerId() == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La información del propietario de la cuenta no puede venir vacio");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         // Comprobamos que el tipo de cuenta sea válido
         if (!AccountType.PERSONAL.toString().equals(account.getType()) && !AccountType.COMPANY.toString().equals(account.getType())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El tipo de cuenta debe de ser PERSONAL o COMPANY");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         Account newAccount = accountService.create(account);
 
+        AccountDTO accountDTO = AccountMapper.INSTANCE.accountToAccountDTO(newAccount);
+
         // Si crea correctamente la cuenta, la devolvemos. En caso contrario devolvemos un CONFLICT
-        return newAccount != null && newAccount.getId()>0 ? ResponseEntity.ok().body(newAccount) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return newAccount != null && newAccount.getId()>0 ? ResponseEntity.ok().body(accountDTO) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @Override
@@ -75,33 +81,34 @@ public class AccountController implements IAccountController{
     }
 
     @Override
-    public ResponseEntity modificarCuenta(Long accountId, Account account) {
+    public ResponseEntity <AccountDTO> modificarCuenta(Long accountId, Account account) {
         // Comprobamos que la cuenta y el id de cuenta venga informada
         if (account == null || accountId == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El identificador de la cuenta y la información a modificar de la cuenta no pueden venir vacio");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         // Comprobamos que la cuenta tenga un propietario
         if (account.getOwnerId() == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La información del propietario de la cuenta debe de venir informada");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         // Comprobamos que el tipo de cuenta sea válido
         if (account.getType() != null && !AccountType.PERSONAL.toString().equals(account.getType()) && !AccountType.COMPANY.toString().equals(account.getType())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El tipo de cuenta debe de ser PERSONAL o COMPANY");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         // Comprobamos que la cuenta exista en el sistema
         Account cuenta = accountService.getAccount(accountId);
 
         if (cuenta == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La cuenta con id " + accountId + " no existe en el sistema");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         cuenta = accountService.updateAccount(accountId, account);
+        AccountDTO accountDTO = AccountMapper.INSTANCE.accountToAccountDTO(cuenta);
 
         // Si modifica correctamente la cuenta, la devolvemos. En caso contrario devolvemos un CONFLICT
-        return cuenta != null ? ResponseEntity.ok().body(cuenta) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return cuenta != null ? ResponseEntity.ok().body(accountDTO) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @Override
@@ -129,65 +136,69 @@ public class AccountController implements IAccountController{
     }
 
     @Override
-    public ResponseEntity modificarCuentaCliente(Long accountId, Long customerId, Account account) {
+    public ResponseEntity <AccountDTO> modificarCuentaCliente(Long accountId, Long customerId, Account account) {
         // Comprobamos que la id del cliente y el id de cuenta vengan informados
         if (customerId == null || accountId == null || account == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El identificador de la cuenta, del cliente y la información a modificar de la cuenta deben de venir informado");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         // Comprobamos que la cuenta tenga un propietario
         if (account.getOwnerId() == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La información del propietario de la cuenta debe de venir informado");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         // Comprobamos que el tipo de cuenta sea válido
         if (account.getType() != null && !AccountType.PERSONAL.toString().equals(account.getType()) && !AccountType.COMPANY.toString().equals(account.getType())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El tipo de cuenta debe de ser PERSONAL o COMPANY");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         // Comprobamos que la cuenta exista en el sistema
         Account cuenta = accountService.getAccount(accountId);
 
         if (cuenta == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La cuenta con id " + accountId + " no existe en el sistema");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         // Comprobamos que la cuenta pertenezca al cliente que nos llega desde el frontal
         if (!customerId.equals(cuenta.getOwnerId())){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("La cuenta a modificar no pertenece al cliente indicado");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         cuenta = accountService.updateAccount(accountId, account);
 
+        AccountDTO accountDTO = AccountMapper.INSTANCE.accountToAccountDTO(cuenta);
+
         // Si modifica correctamente la cuenta, la devolvemos. En caso contrario devolvemos un CONFLICT
-        return (cuenta != null) ? ResponseEntity.ok().body(cuenta) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha realizado correctamente la modificadión de la cuenta con id " + accountId);
+        return (cuenta != null) ? ResponseEntity.ok().body(accountDTO) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @Override
-    public ResponseEntity operarCuenta(Long accountId, Long customerId, Double cantidad, AccountAction accion) {
+    public ResponseEntity <AccountDTO> operarCuenta(Long accountId, Long customerId, Double cantidad, AccountAction accion) {
         // Comprobamos que el id de cliente, el id de cuenta y la accion vengan informada
         if (customerId == null || accountId == null || accion == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El identificador de la cuenta, del cliente y la acción a realizar deben de venir informados");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         // Comprobamos que exista l,a cuenta
         Account cuenta = accountService.getAccount(accountId);
 
         if (cuenta == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La cuenta con id " + accountId + " no existe en el sistema");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         // Comprobamos que la cuenta pertenezca al cliente que nos llega desde el frontal
         if (!customerId.equals(cuenta.getOwnerId())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("La cuenta no pertenece al cliente indicado");
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
 
         }
 
         // Llamamos al servicio para realizar una operación en la cuenta
         cuenta = accountService.operate(cuenta, cantidad, accion);
 
+        AccountDTO accountDTO = AccountMapper.INSTANCE.accountToAccountDTO(cuenta);
+
         // Si la operacion se ha realizado correctamente se devuelve un OK
-        return cuenta != null ? ResponseEntity.ok().body(cuenta) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("La modificación para la cuenta con id " + accountId + " no se ha realizado correctamente");
+        return cuenta != null ? ResponseEntity.ok().body(accountDTO) : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @Override
@@ -203,25 +214,27 @@ public class AccountController implements IAccountController{
     }
 
     @Override
-    public ResponseEntity entregarCuenta(Long accountId, Long ownerId) {
+    public ResponseEntity <AccountDTO> entregarCuenta(Long accountId, Long ownerId) {
         // Comprobamos que el id de cuenta y el id del cliente vengan informados
         if (ownerId == null || accountId == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El identificador del cliente y de la cuenta deben de venir informado");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         // Comprobamos que exista la cuenta
         Account cuenta = accountService.getAccount(accountId);
 
         if (cuenta == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La cuenta con id " + accountId + " no existe en el sistema");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         // Comprobamos que la cuenta pertenezca al cliente que nos llega desde el frontal
         if (!ownerId.equals(cuenta.getOwnerId())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("La cuenta con id " + accountId + " no pertenece al cliente indicado");
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        return ResponseEntity.ok().body(cuenta);
+        AccountDTO accountDTO = AccountMapper.INSTANCE.accountToAccountDTO(cuenta);
+
+        return ResponseEntity.ok().body(accountDTO);
     }
 
     @Override
