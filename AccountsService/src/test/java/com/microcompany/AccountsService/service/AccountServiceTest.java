@@ -43,7 +43,10 @@ public class AccountServiceTest {
         Account account = new Account(1L, "cuenta1", new Date(), 2000d, 1l);
         List<Account> accounts =  new ArrayList<>();
         accounts.add(account);
-        Assertions.assertNotNull(accountRepositoryMock.findByOwnerId(1L));
+
+        Mockito.when(accountRepositoryMock.findByOwnerId(1L)).thenReturn(accounts);
+
+        Assertions.assertNotNull(accService.getAccountByOwnerId(1L));
     }
 
     @Test

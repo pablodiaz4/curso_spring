@@ -4,7 +4,9 @@ INSERT INTO customer (name, email)
               VALUES('COMPANY1', 'COMPANY1@EMAIL.COM');
 
 INSERT INTO accounts (type, opening_Date, balance, owner_Id)
-              VALUES('PERSONAL', NOW(), 10000.00,(SELECT id  FROM customer where name = 'CLIENTE1'));
+              VALUES('PERSONAL', NOW(), 2500.00,(SELECT id  FROM customer where name = 'CLIENTE1'));
+INSERT INTO accounts (type, opening_Date, balance, owner_Id)
+              VALUES('PERSONAL', NOW(), 1500.00,(SELECT id  FROM customer where name = 'CLIENTE1'));
 
 INSERT INTO accounts (type, opening_Date, balance, owner_Id)
               VALUES('COMPANY', NOW(), 200000.00,(SELECT id  FROM customer where name = 'COMPANY1'));
