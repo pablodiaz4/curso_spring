@@ -46,15 +46,26 @@ public class AccountServiceTest {
 
         Mockito.when(accountRepositoryMock.findByOwnerId(1L)).thenReturn(accounts);
 
-        Assertions.assertNotNull(accService.getAccountByOwnerId(1L));
+        List<Account> cuentas = accService.getAccountByOwnerId(1L);
+
+        Assertions.assertNotNull(cuentas);
+        Assertions.assertTrue(cuentas.size() > 0);
     }
 
     @Test
-    void getAccountByOwnerIdIsNotValid() {
-        Account account = new Account(1L, "cuenta1", new Date(), 2000d, 1l);
+    void getAccountByOwnerIdIsNotResult() {
         List<Account> accounts =  new ArrayList<>();
-        accounts.add(account);
         Mockito.when(accountRepositoryMock.findByOwnerId(1L)).thenReturn(accounts);
-        Assertions.assertNotNull(accountRepositoryMock.findByOwnerId(1L));
+
+        List<Account> cuentas = accService.getAccountByOwnerId(99L);
+        Assertions.assertNotNull(cuentas);
+        Assertions.assertTrue(cuentas.size() == 0);
+    }
+
+    @Test
+    void getAccountByOwnerIdIsNull() {
+        List<Account> cuentas = accService.getAccountByOwnerId(null);
+        Assertions.assertNotNull(cuentas);
+        Assertions.assertTrue(cuentas.size() == 0);
     }
 }
