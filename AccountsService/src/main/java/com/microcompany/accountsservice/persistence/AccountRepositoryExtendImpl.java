@@ -60,7 +60,11 @@ public class AccountRepositoryExtendImpl implements AccountRepositoryExtend {
                                     resto = 0D;
                                 }
 
-                                em.persist(a);
+                                // Modifico la cuenta con la nueva cantidad disponible
+                                Account account = em.find(Account.class, cuenta.getId());
+                                account.setBalance(a.getBalance());
+
+                                em.persist(account);
                             }
                             else{
                                 break;
@@ -73,7 +77,10 @@ public class AccountRepositoryExtendImpl implements AccountRepositoryExtend {
             }
 
             // Modifico la cuenta con la nueva cantidad disponible
-            em.persist(cuenta);
+            Account account = em.find(Account.class, cuenta.getId());
+            account.setBalance(cuenta.getBalance());
+
+            em.persist(account);
 
             return em.find(Account.class, cuenta.getId());
         }
