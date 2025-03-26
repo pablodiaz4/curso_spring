@@ -19,12 +19,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @Sql(value = "classpath:testing.sql")
-class AccountControllerTest {
+public class AccountControllerTest {
     @Autowired
     private MockMvc mvc;
 
     @Test
-    void entregarCuentaTestOK() throws Exception{
+    public void entregarCuentaTestOK() throws Exception{
         MvcResult result = mvc.perform(get("/account").param("customerId", "1").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
 
