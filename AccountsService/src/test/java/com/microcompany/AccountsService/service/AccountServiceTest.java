@@ -21,7 +21,7 @@ import java.util.List;
 @ExtendWith(SpringExtension.class)
 public class AccountServiceTest {
     @TestConfiguration
-    static class ProductServiceConf{
+    static class AccountServiceConf{
         @Bean
         public AccountService getAccountServiceBean(){
             return new AccountService();

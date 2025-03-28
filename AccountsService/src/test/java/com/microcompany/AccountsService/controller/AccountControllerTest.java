@@ -8,7 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,11 +30,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 @Sql(value = "classpath:testing.sql")
+@ActiveProfiles("test")
 public class AccountControllerTest {
     @Autowired
     private MockMvc mvc;
 
+    @TestConfiguration
+    static class SecurotyAltConf {
+        @Bean
+        @Profile("test")
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+            http
+                    .authorizeRequests()
+                    .anyRequest().permitAll() // Permite todas las solicitudes
+                    .and()
+                    .csrf().disable(); // Desactiva CSRF para simplificar las pruebas
+
+            return http.build();
+        }
+    }
+
     @Test
+    @WithMockUser(authorities = "USER")
     public void obtenerCuentasClienteCustomerIdValidReturnOKAndAccountList() throws Exception{
         MvcResult result = mvc.perform(get("/account").param("customerId", "1").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();

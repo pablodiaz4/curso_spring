@@ -24,7 +24,7 @@ public interface AccountMapper {
     @Mapping(source = "fechaApertura", target = "openingDate")
     @Mapping(source = "saldo", target = "balance")
     @Mapping(source = "clienteId", target = "ownerId")
-    Account accountDTOToAccount(AccountDTO productDTO);
+    Account accountDTOToAccount(AccountDTO accountDTO);
 
     public Collection<AccountDTO> accountsToAccountDTOs(Collection<Account> accounts);
 
